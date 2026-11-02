@@ -1,0 +1,1 @@
+{"private":true,"scripts":{"test":"node --test tests/logic.test.js tests/manifest.test.js"}}
