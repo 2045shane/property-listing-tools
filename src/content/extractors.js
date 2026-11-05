@@ -29,5 +29,31 @@ function zillowComps(){
  const scripts=[...document.querySelectorAll('script[type="application/json"],script[type="application/ld+json"]')].map(s=>`<script type="application/json">${s.textContent}</script>`).join('');
  return P.parseZillow([...rows,...P.parseZillow(scripts).map(c=>({...c,status:'SOLD'}))]);
 }
-Object.assign(P,{visible,rightmoveListings,zillowComps});
+function zillowListingFacts(){
+ const address=[document.title,location.href];
+ for(const el of document.querySelectorAll('h1, address, [data-testid*="address" i]')) if(visible(el)) address.push(el.innerText);
+ const price=[],beds=[];
+ for(const el of document.querySelectorAll('[data-testid*="price" i], [data-test*="price" i]')){
+  if(!visible(el)) continue;
+  const label=(el.getAttribute('data-testid')||'')+' '+(el.getAttribute('data-test')||'')+' '+el.innerText;
+  if(/zestimate|estimate|tax|\bsold\b|hoa|history/i.test(label)) continue;
+  if(el.closest('article, [data-test="property-card"], [data-testid="property-card"]')) continue;
+  price.push(el.innerText);
+ }
+ for(const el of document.querySelectorAll('[data-testid*="bed" i], [data-test*="bed" i]')){
+  if(!visible(el)||el.closest('article, [data-test="property-card"], [data-testid="property-card"]')) continue;
+  beds.push(el.innerText);
+ }
+ let header='';
+ const h1=[...document.querySelectorAll('h1')].find(visible);
+ if(h1){
+  let node=h1;
+  for(let i=0;i<4&&node.parentElement&&node.parentElement!==document.body&&node.parentElement!==document.documentElement;i++) node=node.parentElement;
+  const clone=node.cloneNode(true);
+  clone.querySelectorAll('article, script, style, [data-test="property-card"], [data-testid="property-card"]').forEach(el=>el.remove());
+  header=clone.innerText||'';
+ }
+ return P.zillowFactsFromParts({addressText:address.join('\n'),priceText:price.join('\n'),bedText:beds.join('\n'),headerText:header});
+}
+Object.assign(P,{visible,rightmoveListings,zillowComps,zillowListingFacts});
 })(globalThis);

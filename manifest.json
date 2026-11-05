@@ -1,13 +1,16 @@
 {
  "manifest_version":3,
  "name":"房产工具 / Property Listing Tools",
- "version":"0.1.0",
- "description":"从当前页面导出 Rightmove 房源，并汇总 Zillow 页面已有的附近成交数据。",
+ "version":"0.2.0",
+ "description":"导出 Rightmove 房源，汇总 Zillow 已有成交，并显示 HUD SAFMR。",
  "permissions":["storage","activeTab"],
  "host_permissions":["https://www.rightmove.co.uk/*","https://www.zillow.com/homedetails/*"],
  "action":{"default_popup":"src/popup/popup.html","default_icon":{"16":"icons/icon16.png","32":"icons/icon32.png","48":"icons/icon48.png","128":"icons/icon128.png"}},
  "icons":{"16":"icons/icon16.png","32":"icons/icon32.png","48":"icons/icon48.png","128":"icons/icon128.png"},
  "options_page":"src/options/options.html",
  "background":{"service_worker":"src/background/service-worker.js"},
- "content_scripts":[{"matches":["https://www.rightmove.co.uk/*","https://www.zillow.com/homedetails/*"],"js":["src/lib/csv.js","src/lib/rightmove.js","src/lib/zillow.js","src/content/extractors.js","src/content/content.js"],"run_at":"document_idle"}]
+ "content_scripts":[
+  {"matches":["https://www.rightmove.co.uk/*"],"js":["src/lib/csv.js","src/lib/rightmove.js","src/content/extractors.js","src/content/content.js"],"run_at":"document_idle"},
+  {"matches":["https://www.zillow.com/homedetails/*"],"js":["src/lib/zillow.js","src/data/hud-fy2027-safmr.js","src/lib/fmr.js","src/content/extractors.js","src/content/content.js"],"run_at":"document_idle"}
+ ]
 }
